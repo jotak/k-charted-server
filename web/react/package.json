@@ -1,0 +1,39 @@
+{
+  "name": "k-charted-server",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@patternfly/react-charts": "^3.4.2",
+    "@patternfly/react-core": "^3.16.10",
+    "@patternfly/react-icons": "^3.8.1",
+    "axios": "^0.18.0",
+    "k-charted-react": "0.1.0-rc4",
+    "patternfly": "^3.59.1",
+    "patternfly-react": "^2.31.1",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "react-router-dom": "^5.0.0",
+    "react-scripts": "3.0.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "proxy": "http://localhost:8000"
+}
