@@ -1,15 +1,16 @@
-FROM alpine:3.9
+FROM centos:centos7
 
 LABEL maintainer="jtakvori@redhat.com"
 
-EXPOSE 8000
-ENV APP_HOME=/opt/
+ENV APP_HOME=/opt/app \
+    PATH=$APP_HOME:$PATH
+
 WORKDIR $APP_HOME
 
 COPY k-charted-server $APP_HOME/
 ADD web/react/build $APP_HOME/web/react/build
 
-# RUN chgrp -R 0 $APP_HOME/web && \
-#    chmod -R g=u $APP_HOME/web
+RUN chgrp -R 0 $APP_HOME/web/react/build && \
+    chmod -R g=u $APP_HOME/web/react/build
 
-ENTRYPOINT [$APP_HOME/k-charted-server]
+ENTRYPOINT ["/opt/app/k-charted-server"]

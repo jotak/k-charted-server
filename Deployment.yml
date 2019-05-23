@@ -1,0 +1,27 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: k-charted-server
+  name: k-charted-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: k-charted-server
+  template:
+    metadata:
+      labels:
+        app: k-charted-server
+    spec:
+      serviceAccount: k-charted-server
+      containers:
+      - image: jotak/k-charted-server:latest
+        imagePullPolicy: IfNotPresent
+        name: k-charted-server
+        ports:
+        - containerPort: 8000
+          name: http
+          protocol: TCP
+        securityContext:
+          privileged: false

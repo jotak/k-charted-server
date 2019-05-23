@@ -15,9 +15,27 @@ class App extends React.Component {
   }
 
   fetch = (args) => {
-    axios.get("/hello").then(rs => {
-      this.setState({ dashboards: rs.data });
-    });
+    if (args && args.namespace) {
+      const filters = [];
+      const additionalLabels = [];
+      if (args.app) {
+        filters.push({app: args.app});
+      } else {
+        additionalLabels.push({app: "App"});
+      }
+      if (args.version) {
+        filters.push({version: args.version});
+      } else {
+        additionalLabels.push({version: "Version"});
+      }
+      axios.get(`/namespaces/${args.namespace}/dashboards/vertx-client`).then(rs => {
+        this.setState({ dashboards: rs.data });
+      });
+    } else {
+      axios.get("/hello").then(rs => {
+        this.setState({ dashboards: rs.data });
+      });
+    }
   }
 
   render() {
