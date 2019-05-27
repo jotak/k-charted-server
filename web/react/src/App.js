@@ -31,10 +31,6 @@ class App extends React.Component {
       axios.get(`/namespaces/${args.namespace}/dashboards/vertx-client`).then(rs => {
         this.setState({ dashboards: rs.data });
       });
-    } else {
-      axios.get("/hello").then(rs => {
-        this.setState({ dashboards: rs.data });
-      });
     }
   }
 
