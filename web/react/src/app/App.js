@@ -6,9 +6,6 @@ import Toolbar from './Toolbar';
 import Dashboard from './Dashboard';
 
 import './App.css';
-// import 'patternfly/dist/css/patternfly.css';
-// import 'patternfly-react/dist/css/patternfly-react.css';
-// import 'patternfly-react-extensions/dist/css/patternfly-react-extensions.css';
 
 class App extends React.Component {
   constructor() {
