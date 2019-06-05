@@ -1,5 +1,9 @@
 #!/bin/sh
 
+echo "Building frontend..."
+cd web/react
+yarn build
+cd ../..
 echo "Building executable..."
 go build
 echo "Building docker image..."

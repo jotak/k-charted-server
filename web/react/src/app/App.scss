@@ -1,0 +1,32 @@
+//$icon-font-path: '~bootstrap-sass/assets/fonts/bootstrap/';
+
+/**
+  Patternfly Sass
+*/
+@import 'patternfly';
+
+/**
+  Patternfly React Specific Sass Extensions
+*/
+@import 'patternfly-react';
+
+/**
+  Patternfly React Extensions Sass
+*/
+@import 'patternfly-react-extensions';
+
+/**
+  Application Overrides
+*/
+a:hover,
+a:focus {
+  text-decoration: none;
+}
+
+.toolbar-pf .btn, .toolbar-pf input {
+  margin-right: 7px;
+}
+
+.c3-legend-item-hidden {
+  opacity: 0.4;
+}
