@@ -1,7 +1,9 @@
 #!/bin/sh
 
+set -e
+
 echo "Building frontend..."
-cd web/react
+cd web/react-ts
 yarn build
 cd ../..
 echo "Building executable..."
