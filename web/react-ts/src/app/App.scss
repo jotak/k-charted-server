@@ -1,15 +1,36 @@
-@import 'patternfly';
-@import 'patternfly-react';
-@import 'patternfly-react-extensions';
+// @import '../patternfly.css';
+@import '../../node_modules/@patternfly/patternfly/patternfly.css';
+
+$font-size-base: 14px;
+// $pf-global--enable-reset: false;
+// $pf-global--disable-fontawesome: true;
+// $pf-global--font-path: '@patternfly/patternfly/assets/fonts/';
+
+body {
+  // margin: 0;
+  // padding: 0;
+  // font-family: overpass;
+  // font-size: 14px;
+  // overflow: hidden;
+  height: 100%;
+}
+
+#root {
+  height: 100%;
+}
+
+header input {
+  color: #222;
+}
 
 /**
   Application Overrides
 */
-a:hover,
-a:focus {
-  text-decoration: none;
-}
+// a:hover,
+// a:focus {
+//   text-decoration: none;
+// }
 
-.toolbar-pf .btn, .toolbar-pf input {
-  margin-right: 7px;
-}
+// .toolbar-pf .btn, .toolbar-pf input {
+//   margin-right: 7px;
+// }

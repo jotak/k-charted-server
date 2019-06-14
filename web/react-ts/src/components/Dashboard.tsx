@@ -1,10 +1,10 @@
 import axios from 'axios';
 import React from 'react';
 import { PF4Dashboard, DashboardModel } from 'k-charted-react';
-import { ToolbarContent } from './Toolbar';
 
 type Props = {
-  toolbar: ToolbarContent,
+  namespace: string,
+  labels: string,
   dashboardName: string
 };
 
@@ -21,8 +21,8 @@ class Dashboard extends React.Component<Props, State> {
 
   componentDidMount = () => {
     this.setState({ loading: true });
-    axios.get(`/namespaces/${this.props.toolbar.namespace}/dashboards/${this.props.dashboardName}`, { params: {
-      labelsFilters: this.props.toolbar.labels
+    axios.get(`/namespaces/${this.props.namespace}/dashboards/${this.props.dashboardName}`, { params: {
+      labelsFilters: this.props.labels
     }}).then(rs => {
       this.setState({ dashboard: rs.data, loading: false });
     });

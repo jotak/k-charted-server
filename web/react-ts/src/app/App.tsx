@@ -1,73 +1,33 @@
-import axios from 'axios';
-import React from 'react';
-import { TabContainer, Nav, NavItem, TabContent, TabPane } from 'patternfly-react';
-import { Runtime } from 'k-charted-react';
+import * as React from 'react';
+import { BrowserRouter as Router, Route } from "react-router-dom";
+import { Brand, Page, PageHeader, PageSection } from '@patternfly/react-core';
 
-import { Toolbar, ToolbarContent } from './Toolbar';
-import Dashboard from './Dashboard';
+import { Masthead } from '../components/Masthead';
+import { Menu } from '../components/Menu';
+import { MainContainer } from '../components/MainContainer';
 
 import './App.css';
 
-type State = {
-  toolbar: ToolbarContent,
-  runtimes: Runtime[]
-}
-
-class App extends React.Component<{}, State> {
-  constructor(props: {}) {
-    super(props);
-    this.state = { toolbar: { namespace: "", labels: "" }, runtimes: [] };
-  }
-
-  fetch = (args: ToolbarContent) => {
-    if (args.namespace) {
-      axios.get(`/namespaces/${args.namespace}/dashboards`, { params: {
-        labelsFilters: args.labels
-      }}).then(rs => {
-        this.setState({ toolbar: args, runtimes: rs.data });
-      });
-    }
-  }
-
+class App extends React.Component<{}, {}> {
   render() {
+    const header = (
+      <PageHeader
+        logo={<Brand alt="K-Charted Explorer" />}
+        toolbar={<Masthead />}
+        showNavToggle={false}
+      />
+    );
     return (
-      <>
-        <Toolbar init={this.state.toolbar} onSearch={this.fetch}></Toolbar>
-        <TabContainer id="tabs" style={{marginLeft: 7}}>
-          <div>
-            <Nav bsClass="nav nav-tabs nav-tabs-pf">
-              {this.state.runtimes.map(runtime => {
-                return runtime.dashboardRefs.map(dashboard => {
-                  return (
-                    <NavItem key={dashboard.template} eventKey={dashboard.template}>
-                      {dashboard.title}
-                    </NavItem>
-                  );
-                });
-              })}
-            </Nav>
-            <TabContent>
-              {this.state.runtimes.map(runtime => {
-                return runtime.dashboardRefs.map(ref => {
-                  return (
-                    <TabPane
-                      key={ref.template}
-                      eventKey={ref.template}
-                      mountOnEnter={true}
-                      unmountOnExit={true}
-                    >
-                      <Dashboard
-                        toolbar={this.state.toolbar}
-                        dashboardName={ref.template}
-                      />
-                    </TabPane>
-                  );
-                });
-              })}
-            </TabContent>
-          </div>
-        </TabContainer>
-      </>
+      <Router>
+        <Page header={header} sidebar={<Menu/>}>
+          <PageSection variant={'light'}>
+            <div className="container-fluid">
+              <Route exact path="/" component={MainContainer} />
+              <Route path="/ns/:namespace" component={MainContainer} />
+            </div>
+          </PageSection>
+        </Page>
+      </Router>
     );
   }
 }

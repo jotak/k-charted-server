@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@patternfly/patternfly": "^2.13.0",
     "@patternfly/react-charts": "^4.1.5",
     "@patternfly/react-core": "^3.38.1",
     "@patternfly/react-icons": "^3.9.5",
@@ -22,6 +23,7 @@
     "@types/node": "12.0.8",
     "@types/react": "16.8.19",
     "@types/react-dom": "16.8.4",
+    "@types/react-router-dom": "4.3.1",
     "react-scripts": "3.0.1",
     "tslint": "~5.16.0",
     "tslint-no-circular-imports": "~0.6.2",
@@ -30,9 +32,6 @@
   },
   "sassIncludes": {
     "src": "src",
-    "patternfly": "node_modules/patternfly/dist/sass",
-    "patternflyReact": "node_modules/patternfly-react/dist/sass",
-    "patternflyReactExtensions": "node_modules/patternfly-react-extensions/dist/sass",
     "bootstrap": "node_modules/bootstrap-sass/assets/stylesheets",
     "fontAwesome": "node_modules/font-awesome-sass/assets/stylesheets"
   },
@@ -42,10 +41,10 @@
     "lint": "tslint --project ./tsconfig.json",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "prepare": "npm run copy-fonts && npm run copy-img && npm run build-css",
-    "copy-fonts": "cp -r node_modules/patternfly/dist/fonts src/",
-    "copy-img": "cp -r node_modules/patternfly/dist/img src/",
-    "build-css": "node-sass-chokidar src/ --output-style compressed --include-path $npm_package_sassIncludes_src --include-path $npm_package_sassIncludes_patternfly --include-path $npm_package_sassIncludes_patternflyReact --include-path $npm_package_sassIncludes_patternflyReactExtensions --include-path $npm_package_sassIncludes_bootstrap --include-path $npm_package_sassIncludes_fontAwesome -o src/"
+    "prepare": "npm run copy-css && npm run build-css",
+    "copy-fonts": "cp -r node_modules/@patternfly/react-core/dist/styles/assets/fonts src/assets/fonts",
+    "copy-css": "cp node_modules/@patternfly/patternfly/patternfly.css src/",
+    "build-css": "node-sass-chokidar src/ --output-style compressed --include-path $npm_package_sassIncludes_src --include-path $npm_package_sassIncludes_bootstrap --include-path $npm_package_sassIncludes_fontAwesome -o src/"
   },
   "eslintConfig": {
     "extends": "react-app"
