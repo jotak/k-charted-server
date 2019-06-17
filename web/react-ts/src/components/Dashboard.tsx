@@ -20,6 +20,18 @@ class Dashboard extends React.Component<Props, State> {
   }
 
   componentDidMount = () => {
+    this.fetch();
+  }
+
+  componentDidUpdate(oldprops: Props) {
+    if (this.props.namespace !== oldprops.namespace
+        || this.props.labels !== oldprops.labels
+        || this.props.dashboardName !== oldprops.dashboardName) {
+      this.fetch();
+    }
+  }
+
+  fetch = () => {
     this.setState({ loading: true });
     axios.get(`/namespaces/${this.props.namespace}/dashboards/${this.props.dashboardName}`, { params: {
       labelsFilters: this.props.labels

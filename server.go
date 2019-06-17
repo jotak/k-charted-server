@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -41,13 +42,56 @@ var cfg = config.Config{
 }
 
 type grouped struct {
-	Namespace string   `json:"namespace"`
-	Items     []string `json:"items"`
+	Key    string    `json:"key"`
+	Value  string    `json:"value"`
+	Nested []grouped `json:"nested"`
 }
 
 func searchLabels(w http.ResponseWriter, r *http.Request) {
+	p8s, err := api.NewClient(api.Config{Address: cfg.PrometheusURL})
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	api := v1.NewAPI(p8s)
+	results, err := labelNames(api)
+	// results, err := api.LabelNames(context.Background())
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondWithJSON(w, http.StatusOK, results)
+}
+
+// Compatibility function for Prometheus 2.3; else we should use api.LabelNames instead.
+func labelNames(api v1.API) ([]string, error) {
+	// Arbitrarily set time range. Meaning that discovery works with metrics produced within last hour
+	end := time.Now()
+	start := end.Add(-time.Hour)
+	results, err := api.Series(context.Background(), []string{"up"}, start, end)
+	if err != nil {
+		return nil, err
+	}
+	asMap := make(map[string]string)
+	for _, labelSet := range results {
+		for name, _ := range labelSet {
+			// Do not send "namespace" label, as it is necessarily used for grouping anyway
+			if name != "namespace" {
+				asMap[string(name)] = string(name)
+			}
+		}
+	}
+	noDup := []string{}
+	for k, _ := range asMap {
+		noDup = append(noDup, k)
+	}
+	return noDup, nil
+}
+
+func groupLabelsValues(w http.ResponseWriter, r *http.Request) {
 	pathParams := mux.Vars(r)
-	groupBy := pathParams["groupBy"]
+	rawGroupBy := pathParams["groupBy"]
+	groupBy := append([]string{"namespace"}, strings.Split(rawGroupBy, ",")...)
 
 	p8s, err := api.NewClient(api.Config{Address: cfg.PrometheusURL})
 	if err != nil {
@@ -65,29 +109,49 @@ func searchLabels(w http.ResponseWriter, r *http.Request) {
 	}
 	groups := []grouped{}
 	for _, labelSet := range results {
-		if namespace, ok := labelSet["namespace"]; ok {
-			if item, ok2 := labelSet[pmod.LabelName(groupBy)]; ok2 {
-				groups = addToGroup(groups, string(namespace), string(item))
+		var values []string
+		for _, key := range groupBy {
+			if value, ok := labelSet[pmod.LabelName(key)]; ok {
+				values = append(values, string(value))
+			} else {
+				// Mission value => ignore item. Alt: we could group all ignored into default category
+				break
 			}
+		}
+		if len(values) == len(groupBy) {
+			groups = addToGroups(groups, groupBy, values)
 		}
 	}
 	respondWithJSON(w, http.StatusOK, groups)
 }
 
-func addToGroup(groups []grouped, namespace string, item string) []grouped {
+func addToGroups(groups []grouped, keys []string, values []string) []grouped {
+	value := values[0]
 	for i, g := range groups {
-		if g.Namespace == namespace {
-			for _, other := range g.Items {
-				if other == item {
-					// Avoid duplicates
-					return groups
-				}
+		if g.Value == value {
+			if len(values) == 1 {
+				// We reached the leaf, and it's already there => do nothing (no duplicate)
+				return groups
 			}
-			groups[i].Items = append(g.Items, item)
+			// Not yet to leaf => continue down the path
+			groups[i].Nested = addToGroups(g.Nested, keys[1:], values[1:])
 			return groups
 		}
 	}
-	return append(groups, grouped{Namespace: namespace, Items: []string{item}})
+	// Value not found => create new struct and append it
+	newGroup := createNewGroup(keys, values)
+	return append(groups, newGroup)
+}
+
+func createNewGroup(keys []string, values []string) grouped {
+	newGroup := grouped{
+		Key:   keys[0],
+		Value: values[0],
+	}
+	if len(keys) > 1 {
+		newGroup.Nested = []grouped{createNewGroup(keys[1:], values[1:])}
+	}
+	return newGroup
 }
 
 func searchDashboards(w http.ResponseWriter, r *http.Request) {
@@ -142,7 +206,8 @@ func respondWithError(w http.ResponseWriter, code int, message string) {
 
 func main() {
 	r := mux.NewRouter()
-	r.HandleFunc("/groupBy/{groupBy}", searchLabels)
+	r.HandleFunc("/labels", searchLabels)
+	r.HandleFunc("/groupBy/{groupBy}", groupLabelsValues)
 	r.HandleFunc("/namespaces/{namespace}/dashboards", searchDashboards)
 	r.HandleFunc("/namespaces/{namespace}/dashboards/{dashboard}", getDashboard)
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./web/react/build/")))

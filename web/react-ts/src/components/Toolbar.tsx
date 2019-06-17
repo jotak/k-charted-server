@@ -7,7 +7,6 @@ type Props = {
 };
 
 export type ToolbarContent = {
-  labels: string
 };
 
 export class Toolbar extends React.Component<Props, ToolbarContent> {
@@ -19,7 +18,6 @@ export class Toolbar extends React.Component<Props, ToolbarContent> {
   render() {
     return (
       <PFToolbar>
-        Labels <input type="text" onChange={evt => this.setState({ labels: evt.target.value })}/>
         <Button onClick={() => this.props.onSearch(this.state)}>Search</Button>
       </PFToolbar>
     );
