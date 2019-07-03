@@ -3,12 +3,12 @@ import * as React from 'react';
 import { Link } from 'react-router-dom';
 import { Nav, NavExpandable, NavList, NavItem, PageSidebar } from '@patternfly/react-core';
 
-import { TypeAheadInput } from './TypeAheadInput';
-import GlobalState from '../state';
+type Props = {
+  groupBy: string[]
+};
 
-type MenuState = {
+type State = {
   activeItem?: string,
-  groupBy: string[],
   groups: Group[]
 };
 
@@ -23,24 +23,28 @@ type MenuItem = {
   path: string
 };
 
-const initialGroupBy = ['pod_name'];
-
-export class Menu extends React.Component<{}, MenuState> {
+export class Menu extends React.Component<Props, State> {
   static contextTypes = {
     router: () => null
   };
 
-  constructor(props: {}) {
+  constructor(props: Props) {
     super(props);
-    this.state = { groupBy: initialGroupBy, groups: [] };
+    this.state = { groups: [] };
   }
 
   componentDidMount = () => {
     this.fetch();
   }
 
+  componentDidUpdate(oldprops: Props) {
+    if (this.props.groupBy !== oldprops.groupBy) {
+      this.fetch();
+    }
+  }
+
   fetch = () => {
-    axios.get(`/groupBy/${this.state.groupBy}`).then(rs => {
+    axios.get(`/groupBy/${this.props.groupBy}`).then(rs => {
       this.setState({ groups: rs.data });
     }).catch(error => {
       // TODO: alert on page
@@ -48,16 +52,9 @@ export class Menu extends React.Component<{}, MenuState> {
     });
   }
 
-  onGroupByChange = (selection: string[]) => {
-    this.setState({ groupBy: selection }, this.fetch);
-  }
-
   render() {
     const PageNav = (
       <>
-        <div style={{ fontStyle: 'italic', fontWeight: 'bold', paddingLeft: 10 }}>
-          <TypeAheadInput title="Group by" values={GlobalState.labels} initial={initialGroupBy} onSelect={this.onGroupByChange} />
-        </div>
         <Nav onSelect={item => this.setState({ activeItem: String(item.itemId) })} onToggle={() => {}} aria-label="Nav">
           <NavList>
             {this.state.groups.map(ns => {
@@ -93,7 +90,7 @@ export class Menu extends React.Component<{}, MenuState> {
     }
     // Leaf
     return [{
-      name: newPath.map(kv => kv[1]).join('-'),
+      name: newPath.map(kv => kv[1]).join(', '),
       path: newPath.map(kv => `${kv[0]}:${kv[1]}`).join(',')
     }];
   }

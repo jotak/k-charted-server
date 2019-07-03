@@ -16,7 +16,7 @@ type State = {
 export class TypeAheadInput extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    this.state = { isExpanded: true, selected: props.initial };
+    this.state = { isExpanded: false, selected: props.initial };
   }
 
   onToggle = (isExpanded: boolean) => {

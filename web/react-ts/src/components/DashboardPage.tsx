@@ -7,10 +7,10 @@ import {
   NavList,
   NavVariants
 } from '@patternfly/react-core';
-import { DashboardRef, Runtime } from 'k-charted-react';
+import { Dashboard, DashboardRef, Runtime, DashboardQuery, DashboardModel } from '@kiali/k-charted-pf4';
 
-import { Toolbar, ToolbarContent } from './Toolbar';
-import Dashboard from './Dashboard';
+import { Toolbar } from './Toolbar';
+import { AllLabelsValues } from '../types/Labels';
 
 type Props = RouteComponentProps<{
   namespace: string,
@@ -18,51 +18,81 @@ type Props = RouteComponentProps<{
 }>
 
 type State = {
-  toolbar: ToolbarContent,
   dashboards: DashboardRef[],
-  selectedDashboard?: string
+  selectedDashboardName?: string,
+  selectedDashboard?: DashboardModel,
+  loading: boolean,
+  labelValues: AllLabelsValues
 }
 
 export class DashboardPage extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    this.state = { toolbar: { labels: "" }, dashboards: [] };
+    this.state = { loading: false, dashboards: [], labelValues: new Map() };
   }
 
   componentDidMount() {
-    this.fetch({});
+    this.fetch();
   }
 
   componentDidUpdate(oldprops: Props) {
     if (this.props.match.params.namespace !== oldprops.match.params.namespace
         || this.props.match.params.labels !== oldprops.match.params.labels) {
-      this.fetch({});
+      this.fetch();
     }
   }
 
-  fetch = (args: ToolbarContent) => {
+  fetch = () => {
+    this.setState({ loading: true });
     const {namespace, labels } = this.props.match.params;
     axios.get(`/namespaces/${namespace}/dashboards`, { params: {
       labelsFilters: labels
     }}).then(rs => {
       const runtimes: Runtime[] = rs.data;
       const dashboards = ([] as DashboardRef[]).concat.apply([], runtimes.map(r => r.dashboardRefs));
-      this.setState({ toolbar: args, dashboards: dashboards, selectedDashboard: dashboards.length > 0 ? dashboards[0].template : undefined });
+      // Keep previous selected if still valid
+      let selectedRef = dashboards.map(d => d.template).find(tpl => tpl === this.state.selectedDashboardName);
+      if (!selectedRef && dashboards.length > 0) {
+        selectedRef = dashboards[0].template;
+      }
+      this.setState({ dashboards: dashboards, selectedDashboardName: selectedRef, loading: false }, () => {
+        if (selectedRef) {
+          this.fetchDashboard({});
+        }
+      });
     });
   }
+
+  fetchDashboard = (options: DashboardQuery) => {
+    const {namespace, labels } = this.props.match.params;
+    options.labelsFilters = labels;
+    axios.get(`/namespaces/${namespace}/dashboards/${this.state.selectedDashboardName}`, { params: options }).then(rs => {
+      this.setState({ selectedDashboard: rs.data });
+    });
+  }
+
+  onSelectDashboard(name: string) {
+    this.setState({ selectedDashboardName: name }, () => {
+      // TODO: keep whatever option can be kept (duration ...)
+      this.fetchDashboard({});
+    });
+  }
+
+  onLabelsFiltersChanged = (newValues: AllLabelsValues) => {
+    this.setState({ labelValues: newValues });
+  };
 
   render() {
     if (this.state.dashboards.length === 0) {
       return (<>No dashboard</>);
     }
-    const {namespace, labels } = this.props.match.params;
     return (
       <>
-        <Nav onSelect={selected => this.setState({ selectedDashboard: String(selected.itemId) })}>
+        <Nav onSelect={selected => this.onSelectDashboard(String(selected.itemId))}>
           <NavList variant={NavVariants.tertiary}>
             {this.state.dashboards.map(dashboard => {
               return (
-                <NavItem key={dashboard.template} itemId={dashboard.template} isActive={this.state.selectedDashboard === dashboard.template}>
+                <NavItem key={dashboard.template} itemId={dashboard.template} isActive={this.state.selectedDashboardName === dashboard.template}>
                   {dashboard.title}
                 </NavItem>
               );
@@ -71,11 +101,11 @@ export class DashboardPage extends React.Component<Props, State> {
         </Nav>
         {this.state.selectedDashboard && (
           <>
-            <Toolbar init={this.state.toolbar} onSearch={this.fetch}></Toolbar>
+            <Toolbar onChange={this.fetchDashboard} onLabelsFiltersChanged={this.onLabelsFiltersChanged}></Toolbar>
             <Dashboard
-              namespace={namespace}
-              labels={labels}
-              dashboardName={this.state.selectedDashboard}
+              dashboard={this.state.selectedDashboard}
+              labelValues={this.state.labelValues}
+              expandHandler={() => {}}
             />
           </>
         )}
