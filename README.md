@@ -1,6 +1,12 @@
 # k-charted-server
 A server implementing K-Charted
 
+## Install dependencies
+
+```bash
+./prepare.sh
+```
+
 ## Build
 
 ```bash
