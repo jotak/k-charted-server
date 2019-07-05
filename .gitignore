@@ -1,1 +1,6 @@
 k-charted-server
+.idea/
+node_modules/
+yarn.lock
+glide.lock
+vendor
