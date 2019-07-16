@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React from 'react';
-import { PF4Dashboard, DashboardModel } from 'k-charted-react';
+import { Dashboard as KDashboard, DashboardModel } from '@kiali/k-charted-pf3';
 import { ToolbarContent } from './Toolbar';
 
 type Props = {
@@ -29,11 +29,11 @@ class Dashboard extends React.Component<Props, State> {
   }
 
   render() {
-  if (this.state.loading) {
-    return (<>Loading...</>);
-  } else if (this.state.dashboard) {
-    return (<PF4Dashboard dashboard={this.state.dashboard} labelValues={new Map()} expandHandler={() => {}} />);
-  }
+    if (this.state.loading) {
+      return (<>Loading ...</>);
+    } else if (this.state.dashboard) {
+      return (<KDashboard dashboard={this.state.dashboard} labelValues={new Map()} expandHandler={() => {}} />);
+    }
     return (<>Empty</>);
   }
 }

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React from 'react';
 import { TabContainer, Nav, NavItem, TabContent, TabPane } from 'patternfly-react';
-import { Runtime } from 'k-charted-react';
+import { Runtime } from '@kiali/k-charted-pf3';
 
 import { Toolbar, ToolbarContent } from './Toolbar';
 import Dashboard from './Dashboard';
