@@ -11,7 +11,7 @@ oc apply -f ./crd.yaml -n $NAMESPACE
 echo "Install templates"
 for T in $(ls dashboards)
 do
-    oc apply -f $T -n $NAMESPACE
+    oc apply -f dashboards/$T -n $NAMESPACE
 done
 
 sed "s/VAR_NAMESPACE/$NAMESPACE/" Permissions.yml | oc apply -n $NAMESPACE -f -

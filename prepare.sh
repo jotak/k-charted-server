@@ -3,7 +3,7 @@
 set -e
 
 echo "Installing frontend dependencies..."
-cd web/react
+cd web/react-ts
 yarn install
 cd ../..
 echo "Installing backend dependencies..."
