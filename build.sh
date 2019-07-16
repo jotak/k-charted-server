@@ -3,7 +3,7 @@
 set -e
 
 echo "Building frontend..."
-cd web/react-ts
+cd web/react
 yarn build
 cd ../..
 echo "Building executable..."

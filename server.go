@@ -6,6 +6,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/kiali/k-charted/config"
+	"github.com/kiali/k-charted/config/promconfig"
 	khttp "github.com/kiali/k-charted/http"
 	"github.com/kiali/k-charted/model"
 	corev1 "k8s.io/api/core/v1"
@@ -24,7 +25,7 @@ func (p Pod) GetAnnotations() map[string]string {
 
 var cfg = config.Config{
 	GlobalNamespace: "istio-system",
-	PrometheusURL:   "http://prometheus.istio-system:9090",
+	Prometheus:      promconfig.PrometheusConfig{URL: "http://prometheus.istio-system:9090"},
 	Errorf: func(s string, args ...interface{}) {
 		fmt.Printf(s+"\n", args...)
 	},

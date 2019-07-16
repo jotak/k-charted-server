@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React from 'react';
-import { PF3Dashboard } from 'k-charted-react';
+import { Dashboard as KDashboard } from '@kiali/k-charted-pf3';
 
 class Dashboard extends React.Component {
   constructor() {
@@ -21,7 +21,7 @@ class Dashboard extends React.Component {
   if (this.state.loading) {
     return (<>Loading...</>);
   } else if (this.state.dashboard) {
-    return (<PF3Dashboard dashboard={this.state.dashboard} />);
+    return (<KDashboard dashboard={this.state.dashboard} />);
   }
     return (<>Empty</>);
   }
