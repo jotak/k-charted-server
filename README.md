@@ -1,6 +1,8 @@
 # k-charted-server
 A server implementing K-Charted
 
+For a more feature-rich demo, check-out the [explorer](https://github.com/jotak/k-charted-server/tree/explorer) branch.
+
 ## Install dependencies
 
 ```bash
