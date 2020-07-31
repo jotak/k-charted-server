@@ -8,7 +8,7 @@ ENV APP_HOME=/opt/app \
 WORKDIR $APP_HOME
 
 COPY k-charted-server $APP_HOME/
-ADD web/react/build $APP_HOME/web/build
+ADD web/build $APP_HOME/web/build
 
 RUN chgrp -R 0 $APP_HOME/web/build && \
     chmod -R g=u $APP_HOME/web/build

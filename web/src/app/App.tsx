@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React from 'react';
 import { Tabs, Tab } from '@patternfly/react-core';
-import { Runtime } from '@kiali/k-charted-pf4';
+import { DashboardRef, Runtime } from '@kiali/k-charted-pf4';
 
 import { Toolbar, ToolbarContent } from './Toolbar';
 import Dashboard from './Dashboard';
@@ -10,13 +10,14 @@ import './App.css';
 
 type State = {
   toolbar: ToolbarContent,
-  runtimes: Runtime[]
+  dashboards: DashboardRef[],
+  activeDashboard?: DashboardRef
 }
 
 class App extends React.Component<{}, State> {
   constructor(props: {}) {
     super(props);
-    this.state = { toolbar: { namespace: "", labels: "" }, runtimes: [] };
+    this.state = { toolbar: { namespace: "", labels: "" }, dashboards: [] };
   }
 
   fetch = (args: ToolbarContent) => {
@@ -24,7 +25,9 @@ class App extends React.Component<{}, State> {
       axios.get(`/namespaces/${args.namespace}/dashboards`, { params: {
         labelsFilters: args.labels
       }}).then(rs => {
-        this.setState({ toolbar: args, runtimes: rs.data });
+        const flat = (rs.data as Runtime[]).flatMap(r => r.dashboardRefs);
+        const first = flat.find(d => d);
+        this.setState({ toolbar: args, dashboards: flat, activeDashboard: first });
       });
     }
   }
@@ -33,28 +36,33 @@ class App extends React.Component<{}, State> {
     return (
       <>
         <Toolbar init={this.state.toolbar} onSearch={this.fetch}></Toolbar>
-        {this.state.runtimes.length > 0 && (
+        {this.state.dashboards.length > 0 && (
           <Tabs
             id="tabs"
-            style={{marginLeft: 7}}
+            activeKey={this.state.activeDashboard?.template}
+            onSelect={(_, key) => {
+              const selected = this.state.dashboards.find(d => d.template === key);
+              if (selected) {
+                this.setState({ activeDashboard: selected });
+              }
+            }}
+//            style={{marginLeft: 7}}
             mountOnEnter={true}
             unmountOnExit={true}
           >
-            {this.state.runtimes.map(runtime => {
-              return runtime.dashboardRefs.map(ref => {
-                return (
-                  <Tab
-                    key={ref.template}
-                    eventKey={ref.template}
-                    title={ref.title}
-                  >
-                    <Dashboard
-                      toolbar={this.state.toolbar}
-                      dashboardName={ref.template}
-                    />
-                  </Tab>
-                );
-              });
+            {this.state.dashboards.map(d => {
+              return (
+                <Tab
+                  key={d.template}
+                  eventKey={d.template}
+                  title={d.title}
+                >
+                  <Dashboard
+                    toolbar={this.state.toolbar}
+                    dashboardName={d.template}
+                  />
+                </Tab>
+              );
             })}
           </Tabs>
         )}

@@ -29,6 +29,7 @@ var cfg = kconf.Config{
 	GlobalNamespace: "istio-system",
 	Prometheus:      kxconf.PrometheusConfig{URL: "http://prometheus.istio-system:9090"},
 	PodsLoader:      podsLoader,
+	NamespaceLabel:  "kubernetes_namespace",
 }
 var logger = klog.LogAdapter{
 	Errorf: func(s string, args ...interface{}) {

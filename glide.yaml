@@ -1,6 +1,6 @@
 package: github.com/jotak/k-charted-server
 import:
 - package: github.com/kiali/k-charted
-  version: v0.6.0
+  version: v0.6.1-rc3
 - package: github.com/json-iterator/go
   version: v1.1.6

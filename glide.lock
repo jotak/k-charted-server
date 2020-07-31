@@ -1,5 +1,5 @@
-hash: 36b4f9b191ac1090989559c9f259ee2131f53926876b24ce87b0a5a5410eff4f
-updated: 2020-07-31T09:39:12.48485764+02:00
+hash: 91f783839b096d3359e2326081218884fcde4adcd1ae303d154d48e27cfb087d
+updated: 2020-07-31T12:44:34.709554011+02:00
 imports:
 - name: github.com/davecgh/go-spew
   version: 782f4967f2dc4564575ca782fe2d04090b5faca8
@@ -31,7 +31,7 @@ imports:
 - name: github.com/json-iterator/go
   version: 0ff49de124c6f76f8494e194af75bde0f1a49a29
 - name: github.com/kiali/k-charted
-  version: 8b81596e06e77c732cc7ddb1b037bc1373ee08fe
+  version: 6632a26840016492958ac81d2cb2b495ce588bda
   subpackages:
   - business
   - config
