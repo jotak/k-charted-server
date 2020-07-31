@@ -3,10 +3,10 @@
 set -e
 
 echo "Building frontend..."
-cd web/react
+cd web
 yarn build
-cd ../..
+cd ..
 echo "Building executable..."
 go build
-echo "Building docker image..."
-docker build -t jotak/k-charted-server .
+echo "Building container image..."
+podman build -t jotak/k-charted-server .

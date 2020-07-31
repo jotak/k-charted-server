@@ -1,0 +1,31 @@
+@import '../../node_modules/@patternfly/patternfly/patternfly.css';
+
+//PF4 Styles
+$pf-global--enable-reset: false;
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: pficon, var(--pf-global--FontFamily--sans-serif);
+  font-size: 14px;
+  overflow: hidden;
+  height: 100%;
+}
+
+#root {
+  height: 100%;
+}
+
+// PF4 needed config for fonts
+$pf-global--disable-fontawesome: true;
+$pf-global--font-path: '@patternfly/patternfly/assets/fonts/';
+
+// This is necessary to have icons into Graph edge
+@font-face {
+  font-family: 'pficon';
+  src: url(../../node_modules/@patternfly/patternfly/assets/pficon/pficon.woff2);
+}
+
+@import '../../node_modules/@patternfly/patternfly/sass-utilities/_all';
+@import '../../node_modules/@patternfly/patternfly/_variables';
+

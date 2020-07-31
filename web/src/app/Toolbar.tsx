@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Toolbar as PFToolbar } from 'patternfly-react';
+import { Button, Toolbar as PFToolbar } from '@patternfly/react-core';
 
 type Props = {
   init: ToolbarContent,

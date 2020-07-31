@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React from 'react';
-import { Dashboard as KDashboard, DashboardModel } from '@kiali/k-charted-pf3';
+import { Dashboard as KDashboard, DashboardModel } from '@kiali/k-charted-pf4';
 import { ToolbarContent } from './Toolbar';
 
 type Props = {

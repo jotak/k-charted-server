@@ -1,0 +1,46 @@
+{
+  "name": "k-charted-server-ts",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@kiali/k-charted-pf4": "0.6.0",
+    "@patternfly/patternfly": "2.71.3",
+    "@patternfly/react-charts": "5.3.18",
+    "@patternfly/react-core": "3.153.3",
+    "axios": "^0.19.0",
+    "react": "16.13.1",
+    "react-dom": "16.13.1",
+    "react-router-dom": "5.0.1",
+    "typestyle": "2.0.4"
+  },
+  "devDependencies": {
+    "@babel/core": "~7.4.3",
+    "@types/react": "16.9.34",
+    "@types/react-dom": "16.9.7",
+    "@types/react-redux": "7.1.7",
+    "@types/react-router-dom": "5.1.5",
+    "@types/node": "12.12.14",
+    "node-sass": "4.12.0",
+    "react-scripts": "3.4.1",
+    "typescript": "~3.7.5"
+  },
+  "scripts": {
+    "build-css": "node-sass src/ --output-style compressed --include-path $npm_package_sassIncludes_src -o src/",
+    "build": "npm run build-css && GENERATE_SOURCEMAP=false EXTEND_ESLINT=true react-scripts build",
+    "start": "react-scripts start",
+    "lint": "eslint --ext js,ts,tsx -c .eslintrc src"
+  },
+  "proxy": "http://localhost:8000/",
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

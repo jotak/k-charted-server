@@ -6,16 +6,17 @@ if [[ "$1" != "" ]]; then
 fi
 
 echo "Install CRDs"
-oc apply -f ./crd.yaml -n $NAMESPACE
+kubectl apply -f ./crd.yaml -n $NAMESPACE
 
 echo "Install templates"
 for T in $(ls dashboards)
 do
-    oc apply -f $T -n $NAMESPACE
+    kubectl apply -f $T -n $NAMESPACE
 done
 
-sed "s/VAR_NAMESPACE/$NAMESPACE/" Permissions.yml | oc apply -n $NAMESPACE -f -
-oc apply -f ./Deployment.yml -n $NAMESPACE
-oc apply -f ./Service.yml -n $NAMESPACE
+sed "s/VAR_NAMESPACE/$NAMESPACE/" Permissions.yml | kubectl apply -n $NAMESPACE -f -
+kubectl apply -f ./Deployment.yml -n $NAMESPACE
+kubectl apply -f ./Service.yml -n $NAMESPACE
 
-oc expose svc/k-charted-server -n $NAMESPACE
+echo "Exposing http://localhost:8000/"
+kubectl port-forward svc/k-charted-server 8000:8000 -n istio-system

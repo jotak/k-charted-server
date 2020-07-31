@@ -5,10 +5,12 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/kiali/k-charted/config"
-	"github.com/kiali/k-charted/config/promconfig"
+	kconf "github.com/kiali/k-charted/config"
+	kxconf "github.com/kiali/k-charted/config/extconfig"
 	khttp "github.com/kiali/k-charted/http"
+	klog "github.com/kiali/k-charted/log"
 	"github.com/kiali/k-charted/model"
+	kmod "github.com/kiali/k-charted/model"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
@@ -23,27 +25,29 @@ func (p Pod) GetAnnotations() map[string]string {
 	return p.Annotations
 }
 
-var cfg = config.Config{
+var cfg = kconf.Config{
 	GlobalNamespace: "istio-system",
-	Prometheus:      promconfig.PrometheusConfig{URL: "http://prometheus.istio-system:9090"},
+	Prometheus:      kxconf.PrometheusConfig{URL: "http://prometheus.istio-system:9090"},
+	PodsLoader:      podsLoader,
+}
+var logger = klog.LogAdapter{
 	Errorf: func(s string, args ...interface{}) {
 		fmt.Printf(s+"\n", args...)
 	},
 	Tracef: func(s string, args ...interface{}) {
 		fmt.Printf(s+"\n", args...)
 	},
-	PodsLoader: podsLoader,
 }
 
 func searchDashboards(w http.ResponseWriter, r *http.Request) {
-	khttp.SearchDashboardsHandler(r.URL.Query(), mux.Vars(r), w, cfg)
+	khttp.SearchDashboardsHandler(r.URL.Query(), mux.Vars(r), w, cfg, logger)
 }
 
 func getDashboard(w http.ResponseWriter, r *http.Request) {
-	khttp.DashboardHandler(r.URL.Query(), mux.Vars(r), w, cfg)
+	khttp.DashboardHandler(r.URL.Query(), mux.Vars(r), w, cfg, logger)
 }
 
-func podsLoader(namespace, labels string) ([]model.Pod, error) {
+func podsLoader(namespace, labels string) ([]kmod.Pod, error) {
 	k8sConfig, err := rest.InClusterConfig()
 	if err != nil {
 		fmt.Printf("%v\n", err)
@@ -70,7 +74,7 @@ func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/namespaces/{namespace}/dashboards", searchDashboards)
 	r.HandleFunc("/namespaces/{namespace}/dashboards/{dashboard}", getDashboard)
-	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./web/react/build/")))
+	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./web/build/")))
 	fmt.Println("Server listening on port 8000")
 	panic(http.ListenAndServe(":8000", r))
 }
